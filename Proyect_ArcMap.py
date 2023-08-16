@@ -28,54 +28,29 @@
 # Import system modules  (Importa ArcGis)
 import arcpy
 from arcpy import env
+# Crear archivo en blanco de trabajo
 
-# Folders de trabajo
-FldOn = "C:/MyWork/Dropbox/MisionRural/"
-# FldOn = "C:/Users/nury.bejarano/Dropbox/MisionRural/"
-FldIn = FldOn + "Input/PREDIOS/"
-FldWork = FldOn + "Working/"
-FldOut = FldWork + "DistanciasLineal/"
-FolderDest = FldOn + "Input/MapaDigitalIntegrado_MDI/proyectados/"
-NearRange = "1000 Kilometers"
-# Lista de layers destinos
-ListaDest = ['cabecera', 'carretera_pavimentada', 'carretera_sinpavimentar']
+# Ruta y nombre del nuevo archivo MXD
+nuevo_mxd_path = r"D:\Proyecto USTA-ECO\mxd\Proyecto_USTA-ECO.mxd"
 
-# Lista de zonas (layers origen)
-ListaPredios = ['CORDOBA', 'BUENAVISTA', 'EL_CERRITO', 'PALMIRA']
-#'BUENAVISTA', 'EL_CERRITO', 'PALMIRA'
+# Crear un objeto MapDocument en blanco
+mxd = arcpy.mapping.MapDocument("CURRENT")  # Crea un nuevo MXD en blanco
 
-# Iterar sobre destinos
-for dest in ListaDest :
-	LayerDest = FolderDest + dest + ".shp"
-	
-	# Iterar sobre los predios
-	for zona in ListaPredios :
-		LayerOn = FldIn + zona + "/RURAL/TPR_" + zona + ".shp" 
-		# Eliminar PointsShape.shp
-		PointsShape = FldWork + "PointsShape.shp" # Este .shp es temporal 
-		try:
-			arcpy.Delete_management(PointsShape , "")
-		except: 
-			arcpy.AddMessage('Points no existe')
+# Guardar el nuevo archivo MXD en la ubicación especificada
+mxd.saveACopy(nuevo_mxd_path)
 
-		# Transformar los predios en puntos - Nombre temporal PointsShape.shp
-		arcpy.FeatureToPoint_management(LayerOn, PointsShape, "CENTROID")
+# Ruta al archivo shapefile y al archivo MXD (Map Document)
+shapefile_path = r"D:\Proyecto USTA-ECO\base\MGN2021_URB_MANZANA\MGN_URB_MANZANA.shp"
+mxd_path = r"D:\Proyecto USTA-ECO\mxd\Proyecto_USTA-ECO.mxd"
 
-		# Calcular la distancia a la cabecera más cercana
-		arcpy.Near_analysis(PointsShape,LayerDest,NearRange,"NO_LOCATION","NO_ANGLE")
-		
-		# Exportar a dbf (Primero debo borrar el archivo.dbf si existe)
-		FileOut =  FldOut + zona + "_DistTo_" + dest + "_Linear.dbf"
-		try:
-			arcpy.Delete_management(FileOut, "")
-		except:
-			arcpy.AddMessage('No existia')
+# Conexión al documento MXD
+mxd = arcpy.mapping.MapDocument(mxd_path)
 
-		arcpy.TableToDBASE_conversion(PointsShape,FldOut)
-		arcpy.Rename_management(FldOut + "PointsShape.dbf",FileOut)
+
 
 # Finaliza
 Fin = 'LISTO EL BURRO CABALLERO'
 print Fin
 
 ########
+
