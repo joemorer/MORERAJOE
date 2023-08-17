@@ -34,23 +34,58 @@ from arcpy import env
 nuevo_mxd_path = r"D:\Proyecto USTA-ECO\mxd\Proyecto_USTA-ECO.mxd"
 
 # Crear un objeto MapDocument en blanco
-mxd = arcpy.mapping.MapDocument("CURRENT")  # Crea un nuevo MXD en blanco
+mxd = arcpy.mapping.MapDocument("CURRENT")
 
 # Guardar el nuevo archivo MXD en la ubicación especificada
 mxd.saveACopy(nuevo_mxd_path)
 
-# Ruta al archivo shapefile y al archivo MXD (Map Document)
-shapefile_path = r"D:\Proyecto USTA-ECO\base\MGN2021_URB_MANZANA\MGN_URB_MANZANA.shp"
-mxd_path = r"D:\Proyecto USTA-ECO\mxd\Proyecto_USTA-ECO.mxd"
+# Folders de trabajo
+FldOn = r"D:\Proyecto USTA-ECO"
+FldIn = FldOn + "\input"
+FldWork = FldOn + "\working"
+FldOut = FldWork + "\output"
+FolderDest = FldOn + "\export"
+# Folders de importaciones
+shapefile_path = FldIn + "\MGN2021_URB_MANZANA\MGN_URB_MANZANA.shp"
+mxd_path = FldOn + "\mxd\Proyecto_USTA-ECO.mxd"
 
 # Conexión al documento MXD
 mxd = arcpy.mapping.MapDocument(mxd_path)
 
+# Carga de .shp 
+arcpy.MakeFeatureLayer_management(shapefile_path,"MGN_URB_MANZANA")
 
+# Nombre del DataFrame
+data_frame_name = "Layers"
+
+# Obtener el DataFrame
+data_frame = arcpy.mapping.ListDataFrames(mxd, data_frame_name)[0]
+
+# Nombre de la capa de la que deseas realizar la selección
+layer_name = "MGN_URB_MANZANA"  
+
+# Obtener la capa desde el DataFrame
+layer_select = arcpy.mapping.ListLayers(mxd, layer_name, data_frame)[0]
+
+# Seleccionar las 10 primeras filas de la columna FID
+query = "FID < 10"
+arcpy.SelectLayerByAttribute_management(layer, "NEW_SELECTION", query)
+
+# Crear un nuevo layer a partir de la selección
+new_layer_name = "NuevaCapa"  
+new_layer = arcpy.management.CopyFeatures(layer, new_layer_name)
+
+# Agregar el nuevo layer al DataFrame
+arcpy.mapping.AddLayer(data_frame, new_layer, "BOTTOM")
+
+# Guardar los cambios en el MXD
+mxd.save()
+
+# Liberar los recursos
+del mxd
 
 # Finaliza
 Fin = 'LISTO EL BURRO CABALLERO'
 print Fin
 
 ########
-
