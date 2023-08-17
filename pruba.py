@@ -1,10 +1,10 @@
 import arcpy
 
 # Ruta al archivo shapefile de entrada
-input_shapefile = r"RUTA\AL\ARCHIVO\input.shp"
+input_shapefile = r"D:\Proyecto USTA-ECO\MGN2021_URB_MANZANA\MGN_URB_MANZANA.shp"
 
 # Ruta al directorio donde se creará el nuevo layer
-output_workspace = r"RUTA\AL\DIRECTORIO\DE\SALIDA"
+output_workspace = r"D:\Proyecto USTA-ECO\output"
 
 # Nombre para el nuevo layer
 output_layer_name = "Top10Selection"
